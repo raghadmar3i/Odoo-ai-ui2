@@ -12,6 +12,23 @@ interface ChatInterfaceProps {
   userInfo?: UserInfo | null
 }
 
+type Sender = "user" | "bot"
+
+interface ChatMessage {
+  sender: Sender
+  text: string
+  section?: string
+  model?: string
+  raw?: any
+}
+
+interface HistoryItem {
+  id: number | string
+  title: string
+  date?: string
+  preview?: string
+}
+
 export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
   const [query, setQuery] = useState("")
   const [messages, setMessages] = useState([])
@@ -22,42 +39,19 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
   const [isMobile, setIsMobile] = useState(false)
   const [showHistoryPopup, setShowHistoryPopup] = useState(false)
   const [historySearchQuery, setHistorySearchQuery] = useState("")
+  const [history, setHistory] = useState<HistoryItem[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState<string | null>(null)
 
   const sections = ["hr", "projects", "accounts", "purchase"]
   const models = ["Projects", "HR", "Accounts", "Purchase", "General"]
 
-  const chatHistory = {
-    Projects: [
-      {
-        id: 1,
-        title: "Project Timeline Discussion",
-        date: "2024-01-15",
-        preview: "Can you help me with project deadlines...",
-      },
-      { id: 2, title: "Resource Allocation", date: "2024-01-14", preview: "I need to allocate team members..." },
-      { id: 3, title: "Budget Planning", date: "2024-01-13", preview: "What's the budget for Q1 projects..." },
-    ],
-    HR: [
-      { id: 4, title: "Employee Onboarding", date: "2024-01-15", preview: "New employee documentation process..." },
-      { id: 5, title: "Leave Management", date: "2024-01-14", preview: "How to approve leave requests..." },
-    ],
-    Accounts: [
-      { id: 6, title: "Invoice Processing", date: "2024-01-15", preview: "Help with invoice approval workflow..." },
-      { id: 7, title: "Financial Reports", date: "2024-01-13", preview: "Generate monthly financial reports..." },
-    ],
-    Purchase: [
-      { id: 8, title: "Vendor Management", date: "2024-01-14", preview: "Adding new vendors to system..." },
-      { id: 9, title: "Purchase Orders", date: "2024-01-12", preview: "Creating purchase orders..." },
-    ],
-    General: [{ id: 10, title: "System Help", date: "2024-01-15", preview: "General system navigation help..." }],
-  }
+  
 
-  const filteredHistory =
-    chatHistory[model]?.filter(
-      (chat) =>
-        chat.title.toLowerCase().includes(historySearchQuery.toLowerCase()) ||
-        chat.preview.toLowerCase().includes(historySearchQuery.toLowerCase()),
-    ) || []
+  const filteredHistory = history.filter((h) => {
+    const q = historySearchQuery.toLowerCase()
+    return (h.title?.toLowerCase().includes(q) || h.preview?.toLowerCase().includes(q))
+  })
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -86,14 +80,17 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({
+          query,
+          model,          // from state
+          user: userInfo ? { name: userInfo.name, fileId: userInfo.fileId } : undefined,
+        }),
       })
 
       const data = await res.json()
       const botMessage = {
         sender: "bot",
-        text: data.response || data.error || "No response",
-        raw: data,
+        text: data.response || data.error || "No response"
       }
       setMessages((prev) => [...prev, botMessage])
     } catch (err) {
@@ -108,11 +105,59 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
     setSidebarCollapsed(!sidebarCollapsed)
   }
 
-  const handleChatSelect = (chat) => {
-    console.log("Selected chat:", chat)
-    setShowHistoryPopup(false)
-    // Here you would load the selected chat messages
+  const fetchHistory = async () => {
+    setHistoryLoading(true)
+    setHistoryError(null)
+    try {
+      const res = await fetch("https://rcc-ai.digital/history", {
+        method: "GET",
+        credentials: "include",
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      // Expecting: [{ id, title, date?, preview? }, ...]
+      const data = await res.json()
+      setHistory(Array.isArray(data) ? data : (data?.items ?? []))
+    } catch (err: any) {
+      setHistoryError("Failed to load history.")
+    } finally {
+      setHistoryLoading(false)
+    }
   }
+  
+  const handleHistoryClick = async () => {
+    // Toggle the popup; when opening, (re)load history
+    const opening = !showHistoryPopup
+    setShowHistoryPopup(opening)
+    if (opening) {
+      await fetchHistory()
+    }
+  }
+  
+  const handleChatSelect = async (chat: HistoryItem) => {
+    try {
+      setLoading(true)
+      // Example: GET with query param ?id=...
+      const res = await fetch(`https://rcc-ai.digital/old-chat?id=${encodeURIComponent(String(chat.id))}`, {
+        method: "GET",
+        credentials: "include",
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      // Expecting: { messages: ChatMessage[] }
+      const data = await res.json()
+      if (Array.isArray(data?.messages)) {
+        setMessages(data.messages as ChatMessage[])
+      } else {
+        // Fallback if API returns a different shape
+        setMessages([])
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { sender: "bot", text: "❌ Could not load old chat." } as ChatMessage])
+    } finally {
+      setShowHistoryPopup(false)
+      setLoading(false)
+    }
+  }
+  
 
   return (
     <div className="h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-[var(--color-splash-gradient-from)] p-2 md:p-4">
@@ -269,7 +314,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
               </div>
               <div className="flex items-center gap-2 md:gap-3">
                 <button
-                  onClick={() => setShowHistoryPopup(true)}
+                  onClick={handleHistoryClick}
                   className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 rounded-lg hover:bg-sky-500/10 transition-colors text-xs md:text-sm"
                 >
                   <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-gray-800" />

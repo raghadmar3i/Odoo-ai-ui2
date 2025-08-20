@@ -12,6 +12,8 @@ interface SplashScreenProps {
 }
 
 export default function SplashScreen({ onLogin }: SplashScreenProps) {
+  const [error, setError] = useState<string | null>(null)
+
   const [fileId, setFileId] = useState("")
   const [name, setName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -19,6 +21,36 @@ export default function SplashScreen({ onLogin }: SplashScreenProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!fileId.trim() || !name.trim()) return
+  
+    setIsLoading(true)
+    setError(null)
+    try {
+      const res = await fetch("https://rcc-ai.digital/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // important if the server sets a session cookie
+        body: JSON.stringify({ fileId: fileId.trim(), name: name.trim() }),
+      })
+  
+      if (!res.ok) {
+        // you can refine this with res.status and a switch, if you like
+        const msg = await res.text().catch(() => "")
+        throw new Error(msg || `Login failed (HTTP ${res.status})`)
+      }
+  
+      // If your API returns user info, you could read it here:
+      // const data = await res.json()
+      // onLogin(data.fileId, data.name)
+  
+      // For now, pass the form values upward:
+      onLogin(fileId.trim(), name.trim())
+    } catch (err: any) {
+      setError(err.message || "Could not log in. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
 
     setIsLoading(true)
     // Simulate loading delay
@@ -43,6 +75,12 @@ export default function SplashScreen({ onLogin }: SplashScreenProps) {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">AI Chat Assistant</h1>
+          {error && (
+            <div className="text-sm text-red-600 bg-white/70 border border-red-200 rounded p-2 mb-2">
+              {error}
+            </div>
+          )}
+
           <p className="text-white/80 text-sm">ERP Integration Platform</p>
         </div>
 
