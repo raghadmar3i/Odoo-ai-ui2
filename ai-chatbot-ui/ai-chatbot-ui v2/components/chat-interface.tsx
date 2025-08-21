@@ -116,7 +116,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       // Expecting: [{ id, title, date?, preview? }, ...]
       const data = await res.json()
-      setHistory(Array.isArray(data) ? data : (data?.items ?? []))
+      setHistory(Array.isArray(data.history) ? data.history : [])
     } catch (err: any) {
       setHistoryError("Failed to load history.")
     } finally {
