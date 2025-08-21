@@ -137,7 +137,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
     try {
       setLoading(true)
       // Example: GET with query param ?id=...
-      const res = await fetch(`https://rcc-ai.digital/old-chat?id=${encodeURIComponent(String(chat.id))}`, {
+      const res = await fetch(`https://rcc-ai.digital/old-chat?session_id=${encodeURIComponent(String(chat.id))}`, {
         method: "GET",
         credentials: "include",
       })
