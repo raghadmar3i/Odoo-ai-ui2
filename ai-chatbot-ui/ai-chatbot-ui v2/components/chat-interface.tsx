@@ -172,6 +172,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       // Clear chat, redirect to splash
       setMessages([]);
       sessionStorage.clear();
+      localStorage.removeItem("rcc_user");
       window.location.href = "/"; // or your splash screen route
     } catch (err) {
       console.error("Logout error:", err);
