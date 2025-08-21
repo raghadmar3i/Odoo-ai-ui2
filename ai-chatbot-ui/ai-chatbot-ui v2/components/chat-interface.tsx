@@ -144,6 +144,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       // Expecting: { messages: ChatMessage[] }
       const data = await res.json()
+      console.log("👀 Old Chat Data:", data)
       if (Array.isArray(data?.messages)) {
         setMessages(data.messages as ChatMessage[])
       }     
