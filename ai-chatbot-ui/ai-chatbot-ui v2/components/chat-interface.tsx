@@ -144,19 +144,9 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       // Expecting: { messages: ChatMessage[] }
       const data = await res.json()
-      if (Array.isArray(data?.history)) {
-        setMessages(
-          data.history.map((item: any) => ({
-            sender: "user",
-            text: item.query
-          })).concat(
-            data.history.map((item: any) => ({
-              sender: "bot",
-              text: item.response
-            }))
-          )
-        )
-      }      
+      if (Array.isArray(data?.messages)) {
+        setMessages(data.messages as ChatMessage[])
+      }     
       else {
         // Fallback if API returns a different shape
         setMessages([])
