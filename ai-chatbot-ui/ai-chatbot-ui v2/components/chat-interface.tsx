@@ -159,6 +159,25 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       setLoading(false)
     }
   }
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("https://rcc-ai.digital/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+  
+      if (!res.ok) throw new Error("Logout failed");
+  
+      // Clear chat, redirect to splash
+      setMessages([]);
+      sessionStorage.clear();
+      window.location.href = "/"; // or your splash screen route
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+  
   
 
   return (
@@ -290,13 +309,16 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                   <h4 className="font-semibold text-white text-sm truncate">{userInfo?.name || "John Doe"}</h4>
                   <p className="text-xs text-white/70 truncate">ID: {userInfo?.fileId || "N/A"}</p>
                 </div>
-                <button className="text-white/70 hover:text-white transition-colors flex-shrink-0">
+                <button
+                  onClick={handleLogout}
+                  className="text-white/70 hover:text-white transition-colors flex-shrink-0"
+                >
                   <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zM12 13a1 1 0 110-2 1 1 0 010 2zM12 20a1 1 0 110-2 1 1 0 010 2z"
+                      d="M12 5v.01M12 12v.01M12 19v.01"
                     />
                   </svg>
                 </button>
