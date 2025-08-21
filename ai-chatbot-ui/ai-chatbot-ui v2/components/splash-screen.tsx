@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +12,6 @@ interface SplashScreenProps {
 
 export default function SplashScreen({ onLogin }: SplashScreenProps) {
   const [error, setError] = useState<string | null>(null)
-
   const [fileId, setFileId] = useState("")
   const [name, setName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -21,42 +19,33 @@ export default function SplashScreen({ onLogin }: SplashScreenProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!fileId.trim() || !name.trim()) return
-  
+
     setIsLoading(true)
     setError(null)
+
     try {
       const res = await fetch("https://rcc-ai.digital/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // important if the server sets a session cookie
+        credentials: "include", // important if server sets a session cookie
         body: JSON.stringify({ fileId: fileId.trim(), name: name.trim() }),
       })
-  
+
       if (!res.ok) {
-        // you can refine this with res.status and a switch, if you like
         const msg = await res.text().catch(() => "")
         throw new Error(msg || `Login failed (HTTP ${res.status})`)
       }
-  
-      // If your API returns user info, you could read it here:
+
+      // You can parse response here if API returns extra info
       // const data = await res.json()
       // onLogin(data.fileId, data.name)
-  
-      // For now, pass the form values upward:
+
       onLogin(fileId.trim(), name.trim())
     } catch (err: any) {
       setError(err.message || "Could not log in. Please try again.")
     } finally {
       setIsLoading(false)
     }
-  }
-  
-
-    setIsLoading(true)
-    // Simulate loading delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    onLogin(fileId.trim(), name.trim())
-    setIsLoading(false)
   }
 
   return (
@@ -80,7 +69,6 @@ export default function SplashScreen({ onLogin }: SplashScreenProps) {
               {error}
             </div>
           )}
-
           <p className="text-white/80 text-sm">ERP Integration Platform</p>
         </div>
 
@@ -88,38 +76,32 @@ export default function SplashScreen({ onLogin }: SplashScreenProps) {
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="fileId" className="text-white font-medium">
-                File ID
-              </Label>
+              <Label htmlFor="fileId" className="text-white font-medium">File ID</Label>
               <Input
                 id="fileId"
                 type="text"
                 placeholder="Enter your File ID"
                 value={fileId}
                 onChange={(e) => setFileId(e.target.value)}
-                className="bg-white/90 border-white/30 text-foreground placeholder:text-muted-foreground focus:ring-primary focus:border-primary"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-white font-medium">
-                Name
-              </Label>
+              <Label htmlFor="name" className="text-white font-medium">Name</Label>
               <Input
                 id="name"
                 type="text"
                 placeholder="Enter your Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-white/90 border-white/30 text-foreground placeholder:text-muted-foreground focus:ring-primary focus:border-primary"
                 required
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 transition-all duration-200 transform hover:scale-[1.02]"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3"
               disabled={isLoading || !fileId.trim() || !name.trim()}
             >
               {isLoading ? (
@@ -127,16 +109,9 @@ export default function SplashScreen({ onLogin }: SplashScreenProps) {
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Connecting...
                 </div>
-              ) : (
-                "Access Chat"
-              )}
+              ) : "Access Chat"}
             </Button>
           </form>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <p className="text-white/60 text-xs">Secure ERP Integration • AI-Powered Assistance</p>
         </div>
       </div>
     </div>
