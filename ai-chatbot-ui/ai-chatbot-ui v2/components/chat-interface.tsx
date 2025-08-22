@@ -182,25 +182,22 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
   
   const handleNewChat = async () => {
     try {
-      // Call backend to clear session
-      await fetch("https://rcc-ai.digital/logout", {
+      // Optional: call an endpoint to create a new session in the backend
+      const res = await fetch("https://rcc-ai.digital/new-session", {
         method: "POST",
         credentials: "include",
       });
   
-      // Clear local chat messages and session storage
+      if (!res.ok) throw new Error("Failed to start new session");
+  
+      // Clear local chat state only — DO NOT touch user info
       setMessages([]);
-      sessionStorage.clear();
-  
-      // Optional: clear user info (if you want to show splash)
-      // setUserInfo(null);  ← only if you want to logout user
-  
-      // Refresh the session by forcing re-login or just reinitializing state
-      // window.location.reload(); ← optional fallback
-    } catch (error) {
-      console.error("Failed to start new chat:", error);
+      setQuery("");
+    } catch (err) {
+      console.error("New chat error:", err);
     }
   };
+  
   
   
 
