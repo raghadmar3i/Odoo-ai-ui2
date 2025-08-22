@@ -179,6 +179,28 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
     }
   };
   
+  const handleNewChat = async () => {
+    try {
+      // Call backend to clear session
+      await fetch("https://rcc-ai.digital/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+  
+      // Clear local chat messages and session storage
+      setMessages([]);
+      sessionStorage.clear();
+  
+      // Optional: clear user info (if you want to show splash)
+      // setUserInfo(null);  ← only if you want to logout user
+  
+      // Refresh the session by forcing re-login or just reinitializing state
+      // window.location.reload(); ← optional fallback
+    } catch (error) {
+      console.error("Failed to start new chat:", error);
+    }
+  };
+  
   
 
   return (
@@ -345,10 +367,14 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                   <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-gray-800" />
                   <span className="hidden sm:inline">History</span>
                 </button>
-                <button className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 rounded-lg hover:bg-sky-600/10 transition-colors text-xs md:text-sm">
+                <button
+                  onClick={handleNewChat}
+                  className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 rounded-lg hover:bg-sky-600/10 transition-colors text-xs md:text-sm"
+                >
                   <PlusCircle className="w-3 h-3 md:w-4 md:h-4 text-gray-800" />
                   <span className="hidden sm:inline">New Chat</span>
                 </button>
+
               </div>
             </header>
 
@@ -385,7 +411,13 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                               : "bg-white text-gray-800 border border-sky-300/20 rounded-bl-md"
                           }`}
                         >
-                          <p className="leading-relaxed text-sm md:text-base">{msg.text}</p>
+                          {msg.sender === "bot" ? (
+                            <TypewriterBubble text={msg.text} />
+                          ) : (
+                            <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">
+                              {msg.text}
+                            </p>
+                          )}
                           {msg.raw?.parsed && (
                             <div className="mt-2 p-2 bg-gray-100 rounded-lg">
                               <p className="text-xs text-gray-500">Intent: {msg.raw.parsed.intent}</p>
