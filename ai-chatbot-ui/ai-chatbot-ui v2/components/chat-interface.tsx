@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Paperclip, PlusCircle, MessageCircle, Send, Bot, User, Menu, X, Search } from "lucide-react"
+import TypewriterBubble from "@/components/TypewriterBubble"
 
 interface UserInfo {
   fileId: string
