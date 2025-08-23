@@ -63,6 +63,12 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
     return (h.title?.toLowerCase().includes(q) || h.preview?.toLowerCase().includes(q))
   })
 
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Check screen size on mount and on resize
   useEffect(() => {
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 768
@@ -72,14 +78,11 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       }
     }
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
     checkScreenSize()
     window.addEventListener("resize", checkScreenSize)
     return () => window.removeEventListener("resize", checkScreenSize)
-  }, [])
+  }, []);
+
 
   const handleQuerySubmit = async (e) => {
     e.preventDefault()
