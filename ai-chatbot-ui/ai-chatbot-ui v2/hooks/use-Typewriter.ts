@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function useTypewriter(text: string, speed = 30) {
+export function useTypewriter(text: string, speed = 30, onChar?: () => void) {
   const [displayed, setDisplayed] = useState("");
 
   useEffect(() => {
@@ -8,6 +8,7 @@ export function useTypewriter(text: string, speed = 30) {
     const interval = setInterval(() => {
       setDisplayed((prev) => prev + text[i]);
       i++;
+      if (onChar) onChar(); // 👈 trigger on each character
       if (i >= text.length) clearInterval(interval);
     }, speed);
 
@@ -16,3 +17,4 @@ export function useTypewriter(text: string, speed = 30) {
 
   return displayed;
 }
+

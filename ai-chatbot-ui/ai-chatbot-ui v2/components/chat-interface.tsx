@@ -1,8 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Paperclip, PlusCircle, MessageCircle, Send, Bot, User, Menu, X, Search } from "lucide-react"
 import TypewriterBubble from "@/components/TypewriterBubble"
+
+function StandardBubble({ text }) {
+  return <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">{text}</p>
+  }
 
 interface UserInfo {
   fileId: string
@@ -47,6 +51,11 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
   const sections = ["hr", "projects", "accounts", "purchase"]
   const models = ["Projects", "HR", "Accounts", "Purchase", "General"]
 
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   
 
   const filteredHistory = history.filter((h) => {
@@ -62,6 +71,10 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
         setSidebarCollapsed(true)
       }
     }
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
     checkScreenSize()
     window.addEventListener("resize", checkScreenSize)
@@ -136,6 +149,12 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
   
   const handleChatSelect = async (chat: HistoryItem) => {
     try {
+      const allMessages = data.messages || []
+      const lastMessage = allMessages[allMessages.length - 1]
+      const initialMessages = allMessages.slice(0, -1)
+
+      setMessages(initialMessages)
+
       setLoading(true)
       // Example: GET with query param ?id=...
       const res = await fetch(`https://rcc-ai.digital/old-chat?session_id=${encodeURIComponent(String(chat.id))}`, {
@@ -153,6 +172,10 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
         // Fallback if API returns a different shape
         setMessages([])
       }
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, { ...lastMessage, isTyping: true }])
+      }, 100)
     } catch (err) {
       setMessages(prev => [...prev, { sender: "bot", text: "❌ Could not load old chat." } as ChatMessage])
     } finally {
@@ -409,12 +432,10 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                               : "bg-white text-gray-800 border border-sky-300/20 rounded-bl-md"
                           }`}
                         >
-                          {msg.sender === "bot" ? (
+                          {msg.sender === "bot" && msg.isTyping ? (
                             <TypewriterBubble text={msg.text} />
                           ) : (
-                            <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">
-                              {msg.text}
-                            </p>
+                            <StandardBubble text={msg.text} />
                           )}
                           {msg.raw?.parsed && (
                             <div className="mt-2 p-2 bg-gray-100 rounded-lg">
@@ -428,8 +449,10 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                           </div>
                         )}
                       </div>
+
                     ))
                   )}
+                  <div ref={messagesEndRef} />
                   {loading && (
                     <div className="flex gap-3 md:gap-4 justify-start">
                       <div className="w-6 h-6 md:w-8 md:h-8 bg-sky-600 rounded-full flex items-center justify-center flex-shrink-0">
