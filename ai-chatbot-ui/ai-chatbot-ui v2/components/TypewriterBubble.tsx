@@ -12,7 +12,8 @@ export default function TypewriterBubble({ text = "" }: { text?: string }) {
 
   return (
     <>
-      <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">{typed}</p>
+      <p className="leading-normal text-sm md:text-base whitespace-pre-line py-1">
+      {typed}</p>
       <div ref={bottomRef} />
     </>
   );

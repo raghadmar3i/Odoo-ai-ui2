@@ -8,7 +8,8 @@ import TypewriterBubble from "@/components/TypewriterBubble"
 
 function StandardBubble({ text }) {
   if (!text) return null;
-  return <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">{text}</p>;
+  return <p className="leading-normal text-sm md:text-base whitespace-pre-line py-1">
+{text}</p>;
 }
 
 interface UserInfo {
