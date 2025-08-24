@@ -7,8 +7,10 @@ import { Paperclip, PlusCircle, MessageCircle, Send, Bot, User, Menu, X, Search 
 import TypewriterBubble from "@/components/TypewriterBubble"
 
 function StandardBubble({ text }) {
-  return <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">{text}</p>
-  }
+  if (!text) return null;
+  return <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">{text}</p>;
+}
+
 
 interface UserInfo {
   fileId: string
