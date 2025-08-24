@@ -111,7 +111,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
 
     const botMessage = {
       sender: "bot",
-      text: data.response || data.error || "No response",
+      text: data?.response?.toString?.() || data?.error?.toString?.() || "No response",
       isTyping: true // ✅ enables typewriter effect
     }
 
