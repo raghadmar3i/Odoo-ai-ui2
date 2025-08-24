@@ -317,21 +317,15 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
               </button>
             )}
 
-<div className="p-3 md:p-6 border-b border-white/20 flex-shrink-0">
- <div className="flex items-center gap-2 md:gap-3 mb-2"> 
-  <div className="w-8 h-8 md:w-10 md:h-10 bg-red-800 rounded-xl flex items-center justify-center">
-      </div>
-      <div className="hidden md:block"> <p className="text-sm text-white/70">El Race Cont.</p> </div>
-       <div className="md:hidden"> <h2 className="text-sm font-bold">El Race</h2> </div> </div> </div>
 
        <div className="p-3 md:p-6 border-b border-white/20 flex-shrink-0">
   <div className="flex flex-col items-center text-center">
     {/* Logo - larger size, no box */}
     <img src="/logo.png" alt="Logo" className="w-20 h-15 md:w-20 md:h-15 object-contain" />
     {/* Slogan */}
-    <h2 className="text-white font-semibold text-base md:text-lg">
+    <p className="text-white font-semibold text-base md:text-lg">
       Elrace Cont
-    </h2>
+    </p>
   </div>
 </div>
 
