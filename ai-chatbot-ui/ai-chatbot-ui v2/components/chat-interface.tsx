@@ -109,13 +109,15 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
 
       const data = await res.json()
 
-    const botMessage = {
-      sender: "bot",
-      text: data?.response?.toString?.() || data?.error?.toString?.() || "No response",
-      isTyping: true // ✅ enables typewriter effect
-    }
+      const botMessage = {
+        sender: "bot",
+        text: data?.response?.toString?.() || data?.error?.toString?.() || "No response",
+        isTyping: true // ✅ enables typewriter effect
+      }
+      console.log("Backend response:", data)
 
-    setMessages((prev) => [...prev, botMessage])
+
+      setMessages((prev) => [...prev, botMessage])
 
     } catch (err) {
       setMessages((prev) => [...prev, { sender: "bot", text: "❌ Error connecting to server." }])
