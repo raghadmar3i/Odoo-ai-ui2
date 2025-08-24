@@ -1,15 +1,24 @@
+// hooks/use-Typewriter.ts
 import { useState, useEffect } from "react";
 
-export function useTypewriter(text: string, speed = 30, onChar?: () => void) {
+export function useTypewriter(text: string = "", speed = 30, onChar?: () => void) {
   const [displayed, setDisplayed] = useState("");
 
   useEffect(() => {
+    if (!text || typeof text !== "string") {
+      setDisplayed("");
+      return;
+    }
+
     let i = 0;
     const interval = setInterval(() => {
-      setDisplayed((prev) => prev + text[i]);
-      i++;
-      if (onChar) onChar(); // 👈 trigger on each character
-      if (i >= text.length) clearInterval(interval);
+      if (i < text.length) {
+        setDisplayed((prev) => prev + text.charAt(i));
+        onChar?.();
+        i++;
+      } else {
+        clearInterval(interval);
+      }
     }, speed);
 
     return () => clearInterval(interval);
@@ -17,4 +26,3 @@ export function useTypewriter(text: string, speed = 30, onChar?: () => void) {
 
   return displayed;
 }
-
