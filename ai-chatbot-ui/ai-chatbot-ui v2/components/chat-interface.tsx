@@ -2,6 +2,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+
 import { Paperclip, PlusCircle, MessageCircle, Send, Bot, User, Menu, X, Search } from "lucide-react"
 import TypewriterBubble from "@/components/TypewriterBubble"
 
@@ -108,13 +109,13 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
 
       const data = await res.json()
 
-      const botMessage = {
-        sender: "bot",
-        text: data.response || data.error || "No response",
-        isTyping: true // ✅ enables typewriter effect
-      }
+    const botMessage = {
+      sender: "bot",
+      text: data.response || data.error || "No response",
+      isTyping: true // ✅ enables typewriter effect
+    }
 
-      setMessages((prev) => [...prev, botMessage])
+    setMessages((prev) => [...prev, botMessage])
 
     } catch (err) {
       setMessages((prev) => [...prev, { sender: "bot", text: "❌ Error connecting to server." }])
