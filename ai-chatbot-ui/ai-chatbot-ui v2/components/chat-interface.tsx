@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -57,6 +58,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   
+  
 
   const filteredHistory = history.filter((h) => {
     const q = historySearchQuery.toLowerCase()
@@ -105,11 +107,15 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
       })
 
       const data = await res.json()
+
       const botMessage = {
         sender: "bot",
-        text: data.response || data.error || "No response"
+        text: data.response || data.error || "No response",
+        isTyping: true // ✅ enables typewriter effect
       }
+
       setMessages((prev) => [...prev, botMessage])
+
     } catch (err) {
       setMessages((prev) => [...prev, { sender: "bot", text: "❌ Error connecting to server." }])
     } finally {
@@ -152,40 +158,39 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
   
   const handleChatSelect = async (chat: HistoryItem) => {
     try {
-      const allMessages = data.messages || []
-      const lastMessage = allMessages[allMessages.length - 1]
-      const initialMessages = allMessages.slice(0, -1)
-
-      setMessages(initialMessages)
-
-      setLoading(true)
-      // Example: GET with query param ?id=...
+      setLoading(true);
+  
       const res = await fetch(`https://rcc-ai.digital/old-chat?session_id=${encodeURIComponent(String(chat.id))}`, {
         method: "GET",
         credentials: "include",
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      // Expecting: { messages: ChatMessage[] }
-      const data = await res.json()
-      console.log("👀 Old Chat Data:", data)
-      if (Array.isArray(data?.messages)) {
-        setMessages(data.messages as ChatMessage[])
-      }     
-      else {
-        // Fallback if API returns a different shape
-        setMessages([])
-      }
-
+      });
+  
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      
+      const data = await res.json();
+      const allMessages = data.messages || [];
+  
+      if (allMessages.length === 0) throw new Error("No messages found.");
+  
+      const lastMessage = allMessages[allMessages.length - 1];
+      const initialMessages = allMessages.slice(0, -1);
+  
+      setMessages(initialMessages);
+  
+      // Show last message with typing effect
       setTimeout(() => {
-        setMessages(prev => [...prev, { ...lastMessage, isTyping: true }])
-      }, 100)
+        setMessages(prev => [...prev, { ...lastMessage, isTyping: true }]);
+      }, 300);
+  
     } catch (err) {
-      setMessages(prev => [...prev, { sender: "bot", text: "❌ Could not load old chat." } as ChatMessage])
+      console.error("Old chat loading failed:", err);
+      setMessages(prev => [...prev, { sender: "bot", text: "❌ Could not load old chat." }]);
     } finally {
-      setShowHistoryPopup(false)
-      setLoading(false)
+      setShowHistoryPopup(false);
+      setLoading(false);
     }
-  }
+  };
+  
 
   const handleLogout = async () => {
     try {
