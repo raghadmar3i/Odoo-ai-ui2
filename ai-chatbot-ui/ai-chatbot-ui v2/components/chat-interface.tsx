@@ -320,8 +320,8 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
               <div className="p-3 md:p-6 border-b border-white/20 flex-shrink-0">
   <div className="flex flex-col items-center text-center">
     {/* Logo in rectangular box */}
-    <div className="w-12 h-8 md:w-16 md:h-10 bg-[var(--color-splash-gradient-from)] rounded border border-white/30 flex items-center justify-center mb-2 md:mb-3">
-                  <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+    <div className="w-24 h-16 md:w-32 md:h-20 bg-[var(--color-splash-gradient-from)] rounded border border-white/30 flex items-center justify-center mb-2 md:mb-3">
+                  <img src="/logo.png" alt="Logo" className="w-12 h-12 md:w-14 md:h-14 object-contain" />
                 </div>
                 <div className="hidden md:block">
                   <p className="text-sm text-white/70">El Race Cont.</p>
