@@ -11,7 +11,6 @@ function StandardBubble({ text }) {
   return <p className="leading-relaxed text-sm md:text-base whitespace-pre-line">{text}</p>;
 }
 
-
 interface UserInfo {
   fileId: string
   name: string
@@ -450,9 +449,9 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                           }`}
                         >
                           {msg.sender === "bot" && msg.isTyping ? (
-                            <TypewriterBubble text={msg.text?.toString() || ""} />
+                            <TypewriterBubble text={msg.text ?? ""} />
                           ) : (
-                            <StandardBubble text={msg.text?.toString() || ""} />
+                            <StandardBubble text={msg.text ?? ""} />
                           )}
                           {msg.raw?.parsed && (
                             <div className="mt-2 p-2 bg-gray-100 rounded-lg">
