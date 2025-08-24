@@ -4,7 +4,7 @@ import { useTypewriter } from "../hooks/use-Typewriter"
 import { useRef } from "react"
 
 
-export default function TypewriterBubble({ text }: { text: string }) {
+export default function TypewriterBubble({ text = "" }: { text?: string }) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const scroll = () => bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -17,4 +17,5 @@ export default function TypewriterBubble({ text }: { text: string }) {
     </>
   );
 }
+
 
