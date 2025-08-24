@@ -320,21 +320,20 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
             <div className="p-3 md:p-6 border-b border-white/20 flex-shrink-0">
               <div className="flex items-center gap-2 md:gap-3 mb-2">
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-red-800 rounded-xl flex items-center justify-center">
-                  <span className="text-lg md:text-xl font-bold text-white">🏢</span>
+                  <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
                 </div>
                 <div className="hidden md:block">
-                  <h2 className="text-xl font-bold">RCC Company</h2>
-                  <p className="text-sm text-white/70">AI Assistant</p>
+                  <p className="text-sm text-white/70">El Race Cont.</p>
                 </div>
                 <div className="md:hidden">
-                  <h2 className="text-sm font-bold">RCC</h2>
+                  <h2 className="text-sm font-bold">El Race</h2>
                 </div>
               </div>
             </div>
 
             <div className="p-3 md:p-6 border-b border-white/20 flex-shrink-0">
               <h3 className="font-semibold mb-3 md:mb-4 text-white/90 text-sm md:text-base">
-                <span className="hidden md:inline">ERP Business Modules</span>
+                <span className="hidden md:inline">Departments</span>
                 <span className="md:hidden">Modules</span>
               </h3>
               <div className="space-y-1 md:space-y-2">
@@ -425,7 +424,7 @@ export default function ChatInterface({ userInfo }: ChatInterfaceProps) {
                         <Bot className="w-6 h-6 md:w-8 md:h-8 text-sky-600" />
                       </div>
                       <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
-                        Welcome to RCC AI Assistant
+                        Welcome to El Race AI Assistant
                       </h3>
                       <p className="text-sm md:text-base text-gray-500">
                         Start a conversation by typing your message below.
